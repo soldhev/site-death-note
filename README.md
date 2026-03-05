@@ -1,0 +1,3 @@
+Clannad é jogo de romance visual japonês desenvolvido pela Key e lançado em 28 de abril de 2004, para o sistema operacional Windows. Enquanto as duas primeiras obras anteriores da Key, Kanon e Air, haviam sido lançadas inicialmente como jogos para adultos e depois censuradas para o público mais jovem, Clannad foi especificamente criada para todas as idades. Posteriormente, foi portado para PlayStation 2, PlayStation Portable, Xbox 360, PlayStation 3, PlayStation Vita, PlayStation 4 e Nintendo Switch. Uma versão em inglês para Windows foi lançada no Steam pela Sekai Project em 2015. 
+
+#
