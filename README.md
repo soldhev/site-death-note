@@ -61,9 +61,6 @@ Site de e-commerce temático inspirado no anime **Death Note**, simulando uma lo
     ├── p3.jpg   → Figure Ryuk
     ├── p4.jpg   → Figure Light Yagami
     ├── p5.jpg   → Figure L Lawliet
-    ├── p6.jpg   → Funko Pop L with Cake #219
-    ├── p7.jpg   → Funko Pop Ryuk #217
-    └── p8.jpg   → Funko Pop L #218
 ```
 
 ---
