@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos — Death Note Store</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.page-hero {
+  padding: 140px 0 60px;
+  text-align: center;
+  background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(192,0,26,.07) 0%, transparent 70%);
+  border-bottom: 1px solid rgba(192,0,26,.12);
+}
+.page-hero h1 { font-family:'Cinzel Decorative',cursive; font-size:clamp(2rem,5vw,4rem); color:var(--white); animation:fadeInUp .8s ease forwards; }
+.page-hero p { font-style:italic; color:var(--gold); margin-top:.8rem; animation:fadeInUp .8s ease forwards .2s; opacity:0; }
+
+/* FILTROS */
+.filters { padding:2rem 0; border-bottom:1px solid rgba(201,168,76,.1); }
+.filters-inner { display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; }
+.filter-btn {
+  background:none; border:1px solid rgba(200,200,200,.15); color:rgba(200,200,200,.5);
+  padding:7px 18px; font-family:'Special Elite',cursive; font-size:.68rem; letter-spacing:2px;
+  text-transform:uppercase; cursor:none; transition:all .2s;
+}
+.filter-btn:hover,.filter-btn.active { border-color:var(--red); color:var(--white); background:rgba(192,0,26,.1); }
+.filter-sep { flex:1; }
+.sort-sel {
+  background:#0f0c0f; border:1px solid rgba(200,200,200,.15); color:var(--text);
+  padding:7px 14px; font-family:'Special Elite',cursive; font-size:.68rem;
+  letter-spacing:1px; cursor:none; outline:none;
+}
+
+/* GRID */
+.products-section { padding:60px 0 100px; }
+.products-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.8rem; }
+
+.prod-card {
+  background:#0f0c0f; border:1px solid rgba(201,168,76,.12);
+  overflow:hidden; transition:all .3s; cursor:none;
+  animation:fadeInUp .6s ease forwards;
+  opacity:0;
+}
+.prod-card:hover { border-color:rgba(192,0,26,.4); box-shadow:0 20px 50px rgba(0,0,0,.7); transform:translateY(-4px); }
+
+/* atraso em cascata */
+.prod-card:nth-child(1){animation-delay:.05s}
+.prod-card:nth-child(2){animation-delay:.12s}
+.prod-card:nth-child(3){animation-delay:.19s}
+.prod-card:nth-child(4){animation-delay:.26s}
+.prod-card:nth-child(5){animation-delay:.33s}
+.prod-card:nth-child(6){animation-delay:.40s}
+
+.prod-img {
+  height:240px; background:linear-gradient(135deg,#1a1018,#100c14);
+  display:flex; align-items:center; justify-content:center; font-size:5.5rem;
+  position:relative; overflow:hidden;
+}
+.prod-img::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at center,rgba(192,0,26,.08),transparent 70%); }
+.badge {
+  position:absolute; top:12px; right:12px;
+  background:var(--red); color:var(--white);
+  font-family:'Special Elite',cursive; font-size:.58rem; letter-spacing:2px;
+  padding:3px 10px; text-transform:uppercase;
+}
+.badge.gold { background:var(--gold); color:var(--black); }
+
+.prod-body { padding:1.5rem; }
+.prod-name { font-family:'Cinzel Decorative',cursive; font-size:.92rem; color:var(--white); margin-bottom:.3rem; }
+.prod-cat { font-family:'Special Elite',cursive; font-size:.6rem; letter-spacing:2px; color:var(--red); text-transform:uppercase; margin-bottom:.8rem; }
+
+/* ESPECIFICAÇÕES */
+.prod-specs { margin:.8rem 0 1rem; border-top:1px solid rgba(201,168,76,.1); padding-top:.8rem; }
+.prod-specs h5 { font-family:'Special Elite',cursive; font-size:.62rem; letter-spacing:2px; color:rgba(201,168,76,.6); text-transform:uppercase; margin-bottom:.5rem; }
+.spec-row { display:flex; justify-content:space-between; font-size:.8rem; margin-bottom:.3rem; }
+.spec-key { color:rgba(200,200,200,.35); }
+.spec-val { color:rgba(200,200,200,.7); text-align:right; }
+
+.prod-price { font-family:'Cinzel Decorative',cursive; font-size:1.4rem; color:var(--gold); margin:.8rem 0 .3rem; }
+.prod-installment { font-size:.78rem; color:rgba(200,200,200,.4); margin-bottom:1rem; font-style:italic; }
+
+/* FORMAS DE PAGAMENTO */
+.payment-methods { display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:1.2rem; }
+.pay-tag {
+  border:1px solid rgba(200,200,200,.12); padding:3px 9px;
+  font-family:'Special Elite',cursive; font-size:.58rem; letter-spacing:1px;
+  color:rgba(200,200,200,.45); text-transform:uppercase;
+}
+.pay-tag.pix { border-color:rgba(50,200,120,.3); color:rgba(50,200,120,.7); }
+
+.prod-actions { display:flex; gap:.6rem; }
+.btn-cart {
+  flex:1; background:var(--red); color:var(--white); border:none;
+  padding:10px; font-family:'Special Elite',cursive; font-size:.72rem;
+  letter-spacing:2px; cursor:none; transition:all .2s; text-transform:uppercase;
+}
+.btn-cart:hover { background:var(--red2); box-shadow:0 0 20px rgba(192,0,26,.4); }
+.btn-wish {
+  background:none; border:1px solid rgba(200,200,200,.15); color:rgba(200,200,200,.4);
+  padding:10px 14px; cursor:none; font-size:1rem; transition:all .2s;
+}
+.btn-wish:hover { border-color:var(--gold); color:var(--gold); }
+
+/* MODAL */
+.prod-modal {
+  position:fixed; inset:0; background:rgba(0,0,0,.95);
+  z-index:2000; display:flex; align-items:center; justify-content:center; padding:1rem;
+  opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.prod-modal.open { opacity:1; pointer-events:all; }
+.modal-box {
+  background:#0f0c0f; border:1px solid rgba(201,168,76,.2);
+  max-width:820px; width:100%; max-height:90vh; overflow-y:auto;
+  display:grid; grid-template-columns:1fr 1fr; position:relative;
+}
+.modal-img { background:linear-gradient(135deg,#1a1018,#0e0a10); display:flex; align-items:center; justify-content:center; font-size:8rem; min-height:350px; }
+.modal-body { padding:2.5rem; }
+.modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; color:rgba(255,255,255,.3); font-size:1.5rem; cursor:none; transition:color .2s; }
+.modal-close:hover { color:var(--red); }
+.modal-title { font-family:'Cinzel Decorative',cursive; font-size:1.2rem; color:var(--white); margin-bottom:.3rem; }
+.modal-cat { font-family:'Special Elite',cursive; font-size:.6rem; letter-spacing:2px; color:var(--red); text-transform:uppercase; margin-bottom:1.2rem; }
+.modal-desc { font-size:.92rem; color:var(--text); margin-bottom:1.5rem; line-height:1.8; }
+.modal-price { font-family:'Cinzel Decorative',cursive; font-size:2rem; color:var(--gold); }
+.modal-installment { font-size:.82rem; color:rgba(200,200,200,.4); margin-bottom:1.2rem; font-style:italic; }
+.modal-spec-title { font-family:'Special Elite',cursive; font-size:.62rem; letter-spacing:3px; color:rgba(201,168,76,.6); text-transform:uppercase; margin-bottom:.6rem; }
+.modal-spec-grid { display:grid; grid-template-columns:1fr 1fr; gap:.3rem .8rem; margin-bottom:1.5rem; }
+.modal-spec-row { display:flex; justify-content:space-between; font-size:.8rem; padding:.25rem 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.modal-spec-key { color:rgba(200,200,200,.35); }
+.modal-spec-val { color:rgba(200,200,200,.75); }
+.modal-payment-title { font-family:'Special Elite',cursive; font-size:.62rem; letter-spacing:3px; color:rgba(201,168,76,.6); text-transform:uppercase; margin-bottom:.6rem; }
+.modal-payment-grid { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+.mpay {
+  background:rgba(0,0,0,.4); border:1px solid rgba(200,200,200,.12);
+  padding:6px 12px; font-family:'Special Elite',cursive; font-size:.62rem;
+  letter-spacing:1px; color:rgba(200,200,200,.5); text-transform:uppercase;
+}
+.mpay.pix { border-color:rgba(50,200,120,.3); color:rgba(50,200,120,.7); background:rgba(50,200,120,.04); }
+.mpay.card { border-color:rgba(100,150,255,.3); color:rgba(100,150,255,.7); background:rgba(100,150,255,.04); }
+
+@media(max-width:768px){
+  .products-grid { grid-template-columns:1fr 1fr; }
+  .modal-box { grid-template-columns:1fr; }
+  .modal-img { min-height:180px; font-size:5rem; }
+}
+@media(max-width:480px){
+  .products-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- SEARCH MODAL -->
+<div class="search-modal" id="searchModal">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <input type="text" class="search-input" id="searchInput" placeholder="Buscar produtos...">
+      <button class="search-close" onclick="closeSearch()">✕</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<!-- PRODUTO MODAL -->
+<div class="prod-modal" id="prodModal">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-img" id="modalImg">📓</div>
+    <div class="modal-body">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <p class="modal-cat" id="modalCat">Cadernos</p>
+      <h2 class="modal-title" id="modalTitle">Produto</h2>
+      <p class="modal-desc" id="modalDesc"></p>
+      <p class="modal-price" id="modalPrice"></p>
+      <p class="modal-installment" id="modalInst"></p>
+      <p class="modal-spec-title">Especificações</p>
+      <div class="modal-spec-grid" id="modalSpecs"></div>
+      <p class="modal-payment-title">Formas de Pagamento</p>
+      <div class="modal-payment-grid" id="modalPayment"></div>
+      <div style="display:flex;gap:.8rem;">
+        <button class="btn-cart" id="modalCartBtn" style="flex:1">Adicionar ao Carrinho</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 40 40" fill="none"><rect x="5" y="2" width="26" height="36" rx="2" fill="#1a1410" stroke="#c9a84c" stroke-width="1.4"/><rect x="5" y="2" width="5" height="36" fill="#8b6914"/><circle cx="31" cy="31" r="7" fill="#c0001a"/><text x="27.5" y="35" fill="white" font-size="9" font-family="serif">✕</text></svg>
+    </div>
+    <div class="logo-text">Death Note <small>store oficial</small></div>
+  </a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="produtos.html" class="active">Produtos</a>
+    <a href="cadastro.html">Cadastro</a>
+    <a href="index.html#faq">FAQ</a>
+    <a href="index.html#trabalhe">Trabalhe Conosco</a>
+    <a href="index.html#contatos">Contatos</a>
+  </nav>
+  <div class="header-right">
+    <a href="cadastro.html" class="btn-outline" style="padding:6px 16px;font-size:.68rem;letter-spacing:2px;">Entrar</a>
+    <button class="btn-search" onclick="openSearch()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Pesquisar
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <p class="section-label">Loja</p>
+      <h1>Nossos Produtos</h1>
+      <p>"Cada item foi escolhido com a precisão de L e a ambição de Light."</p>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filters">
+    <div class="container">
+      <div class="filters-inner">
+        <button class="filter-btn active" onclick="filterProds(this,'todos')">Todos</button>
+        <button class="filter-btn" onclick="filterProds(this,'cadernos')">Cadernos</button>
+        <button class="filter-btn" onclick="filterProds(this,'vestuario')">Vestuário</button>
+        <button class="filter-btn" onclick="filterProds(this,'colecao')">Colecionáveis</button>
+        <button class="filter-btn" onclick="filterProds(this,'acessorios')">Acessórios</button>
+        <div class="filter-sep"></div>
+        <select class="sort-sel" onchange="sortProds(this.value)">
+          <option value="default">Ordenar: Destaque</option>
+          <option value="priceAsc">Menor Preço</option>
+          <option value="priceDesc">Maior Preço</option>
+          <option value="name">Nome A–Z</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUTOS -->
+  <section class="products-section">
+    <div class="container">
+      <div class="products-grid" id="prodGrid"></div>
+    </div>
+  </section>
+</main>
+
+<!-- VLIBRAS -->
+<div class="vlibras-bar">
+  <span>Acessibilidade</span>
+  <button class="vlibras-btn" onclick="alert('VLibras — Tradução em Língua Brasileira de Sinais')">🤟 VLibras — Libras</button>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><div class="logo-icon" style="width:36px;height:36px"><svg viewBox="0 0 40 40" fill="none"><rect x="5" y="2" width="26" height="36" rx="2" fill="#1a1410" stroke="#c9a84c" stroke-width="1.4"/><rect x="5" y="2" width="5" height="36" fill="#8b6914"/><circle cx="31" cy="31" r="7" fill="#c0001a"/><text x="27.5" y="35" fill="white" font-size="9" font-family="serif">✕</text></svg></div><div class="logo-text" style="font-size:.82rem">Death Note <small>store oficial</small></div></div>
+      <p>A maior loja de produtos Death Note do Brasil.</p>
+      <div class="social-row"><a href="#" class="social-btn">📸</a><a href="#" class="social-btn">𝕏</a><a href="#" class="social-btn">f</a><a href="#" class="social-btn">▶</a><a href="#" class="social-btn">♪</a></div>
+    </div>
+    <div class="footer-col"><h4>Navegação</h4><ul><li><a href="index.html">Home</a></li><li><a href="produtos.html">Produtos</a></li><li><a href="cadastro.html">Cadastro</a></li><li><a href="index.html#faq">FAQ</a></li></ul></div>
+    <div class="footer-col"><h4>Suporte</h4><ul><li><a href="index.html#faq">FAQ</a></li><li><a href="index.html#contatos">Contatos</a></li><li><a href="index.html#trabalhe">Trabalhe Conosco</a></li></ul></div>
+    <div class="footer-col"><h4>Localização</h4><p style="font-size:.8rem;color:rgba(200,200,200,.35);margin-bottom:.8rem;">Rua do Shinigami, 1003 — SP</p><div class="map-wrap"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.1975!2d-46.6388!3d-23.5489!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDMyJzU2LjAiUyA0NsKwMzgnMTkuNiJX!5e0!3m2!1spt-BR!2sbr!4v1234567890" allowfullscreen="" loading="lazy"></iframe></div></div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Death Note Store</span>
+    <span class="footer-copy">Death Note © Tsugumi Ohba · Takeshi Obata / Shueisha</span>
+  </div>
+</footer>
+
+<div id="toast" style="position:fixed;bottom:2rem;right:2rem;background:rgba(192,0,26,.95);color:var(--white);padding:1rem 1.5rem;font-family:'Special Elite',cursive;font-size:.78rem;letter-spacing:2px;z-index:3000;transform:translateY(200%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);"></div>
+
+<script src="shared.js"></script>
+<script>
+// BASE DE DADOS DOS PRODUTOS
+const PRODUCTS = [
+  {
+    id:1, icon:'📓', name:'Death Note Réplica Premium', cat:'cadernos', badge:'Top Vendas', badgeType:'',
+    desc:'Réplica fiel ao anime, capa dura em couro sintético negro, 240 páginas amareladas com bordas envelhecidas. Acompanha caneta esferográfica preta em formato de pena de shinigami.',
+    price:89.90, installments:'3x R$ 29,96 sem juros no cartão',
+    specs:[{k:'Material',v:'Couro sintético'},{k:'Páginas',v:'240 pgs'},{k:'Dimensão',v:'21×15cm'},{k:'Peso',v:'380g'},{k:'Idioma',v:'Japonês/Português'},{k:'Inclui',v:'Caneta pena'}],
+    payment:['PIX 5% OFF','Cartão 3x s/ juros','Boleto','PayPal']
+  },
+  {
+    id:2, icon:'🗿', name:'Action Figure Ryuk 25cm', cat:'colecao', badge:'Exclusivo', badgeType:'',
+    desc:'Action figure do Ryuk em escala 1:8, pintada à mão com 12 pontos de articulação. Inclui acessórios: Death Note em miniatura, maçã vermelha e base colecionável decorativa.',
+    price:189.00, installments:'12x R$ 15,75 sem juros',
+    specs:[{k:'Altura',v:'25cm'},{k:'Material',v:'PVC premium'},{k:'Articulações',v:'12 pontos'},{k:'Inclui',v:'3 acessórios'},{k:'Fabricante',v:'Studio Kira'},{k:'Edição',v:'Limitada 500un'}],
+    payment:['PIX 5% OFF','Cartão 12x s/ juros','Boleto','Mercado Pago']
+  },
+  {
+    id:3, icon:'👕', name:'Camiseta Light Yagami', cat:'vestuario', badge:'', badgeType:'',
+    desc:'Camiseta 100% algodão fio 30/1 com estampa exclusiva de Light Yagami segurando o Death Note. Disponível em P, M, G e GG. Arte produzida por ilustrador japonês parceiro.',
+    price:69.90, installments:'2x R$ 34,95 sem juros',
+    specs:[{k:'Material',v:'Algodão 100%'},{k:'Fio',v:'30/1 penteado'},{k:'Tamanhos',v:'P M G GG'},{k:'Cor',v:'Preta'},{k:'Lavagem',v:'Máquina 30°'},{k:'Estampa',v:'Silk screen'}],
+    payment:['PIX 5% OFF','Cartão 2x s/ juros','Boleto']
+  },
+  {
+    id:4, icon:'☕', name:'Caneca "I am Justice"', cat:'acessorios', badge:'Novo', badgeType:'gold',
+    desc:'Caneca de porcelana 350ml com a frase icônica "I am Justice" e silhueta de Light Yagami. Resistente à lava-louças, impressão termossensível que reage ao calor revelando o Death Note.',
+    price:49.90, installments:'2x R$ 24,95 sem juros',
+    specs:[{k:'Material',v:'Porcelana'},{k:'Volume',v:'350ml'},{k:'Impressão',v:'Termossensível'},{k:'Microondas',v:'Não recomendado'},{k:'Lava-louças',v:'Seguro'},{k:'Efeito',v:'Muda no calor'}],
+    payment:['PIX 5% OFF','Cartão 2x s/ juros','Boleto','PayPal']
+  },
+  {
+    id:5, icon:'🖼️', name:'Poster L × Light Edição Arte', cat:'acessorios', badge:'', badgeType:'',
+    desc:'Poster artístico A2 em papel fosco de alta resolução 300dpi. Arte exclusiva com L e Light em composição dramática. Moldura opcional disponível no site.',
+    price:34.90, installments:'Pagamento à vista',
+    specs:[{k:'Tamanho',v:'A2 (42×59cm)'},{k:'Papel',v:'300g couchê fosco'},{k:'Impressão',v:'Offset 4 cores'},{k:'Resolução',v:'300 DPI'},{k:'Acabamento',v:'Laminação fosca'},{k:'Embalagem',v:'Tubo protetor'}],
+    payment:['PIX 5% OFF','Cartão 2x s/ juros','Boleto']
+  },
+  {
+    id:6, icon:'⛓️', name:'Colar L — Letra L Prateada', cat:'acessorios', badge:'', badgeType:'',
+    desc:'Réplica do colar icônico de L Lawliet. Pingente letra "L" em aço inoxidável 316L com corrente de 60cm. Hipoalergênico, não escurece, acompanha embalagem presente.',
+    price:59.90, installments:'2x R$ 29,95 sem juros',
+    specs:[{k:'Material',v:'Aço 316L'},{k:'Corrente',v:'60cm'},{k:'Pingente',v:'3cm'},{k:'Acabamento',v:'Polimento espelhado'},{k:'Hipoalergênico',v:'Sim'},{k:'Embalagem',v:'Caixa gift'}],
+    payment:['PIX 5% OFF','Cartão 2x s/ juros','Boleto','PayPal']
+  },
+  {
+    id:7, icon:'🎒', name:'Mochila Death Note Escolar', cat:'vestuario', badge:'Mais Vendido', badgeType:'',
+    desc:'Mochila escolar com estampa do Death Note, dois compartimentos principais e bolso frontal. Alças acolchoadas, material impermeável e reforço nas costuras. Suporta até 15kg.',
+    price:129.00, installments:'6x R$ 21,50 sem juros',
+    specs:[{k:'Material',v:'Nylon 600D'},{k:'Capacidade',v:'30L'},{k:'Laptop',v:'Até 15,6"'},{k:'Impermeável',v:'Sim'},{k:'Cor',v:'Preto/Vermelho'},{k:'Dimensão',v:'45×30×15cm'}],
+    payment:['PIX 5% OFF','Cartão 6x s/ juros','Boleto','Mercado Pago']
+  },
+  {
+    id:8, icon:'📦', name:'Kit Colecionador — Starter Pack', cat:'colecao', badge:'Kit Especial', badgeType:'gold',
+    desc:'Kit completo para novos colecionadores: Death Note réplica + colar L + poster A2 + adesivos exclusivos + card lenticular com Light e L. Embalagem colecionável numerada.',
+    price:219.00, installments:'12x R$ 18,25 sem juros',
+    specs:[{k:'Itens',v:'5 produtos'},{k:'Embalagem',v:'Colecionável'},{k:'Numeração',v:'1 de 200'},{k:'Inclui',v:'Certificado'},{k:'Desconto',v:'30% vs separado'},{k:'Edição',v:'Limitada'}],
+    payment:['PIX 5% OFF','Cartão 12x s/ juros','Boleto','PayPal']
+  },
+  {
+    id:9, icon:'🎮', name:'Mousepad XL — Shinigami Realm', cat:'acessorios', badge:'Novo', badgeType:'gold',
+    desc:'Mousepad tamanho XL (80×40cm) com arte panorâmica do Shinigami Realm. Base antiderrapante de borracha natural, superfície de tecido premium para movimento preciso.',
+    price:79.90, installments:'3x R$ 26,63 sem juros',
+    specs:[{k:'Tamanho',v:'80×40cm'},{k:'Espessura',v:'4mm'},{k:'Base',v:'Borracha natural'},{k:'Superfície',v:'Tecido premium'},{k:'Costura',v:'Bordada'},{k:'Lavável',v:'Sim'}],
+    payment:['PIX 5% OFF','Cartão 3x s/ juros','Boleto']
+  },
+];
+
+let currentFilter='todos', currentSort='default';
+let filteredData=[...PRODUCTS];
+
+function renderProducts(data){
+  const grid=document.getElementById('prodGrid');
+  grid.innerHTML=data.map((p,i)=>`
+    <div class="prod-card" style="animation-delay:${i*.07}s" data-cat="${p.cat}">
+      <div class="prod-img">${p.icon}${p.badge?`<span class="badge ${p.badgeType}">${p.badge}</span>`:''}</div>
+      <div class="prod-body">
+        <p class="prod-cat">${p.cat==='cadernos'?'Cadernos':p.cat==='colecao'?'Colecionáveis':p.cat==='vestuario'?'Vestuário':'Acessórios'}</p>
+        <p class="prod-name">${p.name}</p>
+        <div class="prod-specs">
+          <h5>Especificações</h5>
+          ${p.specs.slice(0,3).map(s=>`<div class="spec-row"><span class="spec-key">${s.k}</span><span class="spec-val">${s.v}</span></div>`).join('')}
+        </div>
+        <p class="prod-price">R$ ${p.price.toFixed(2).replace('.',',')}</p>
+        <p class="prod-installment">${p.installments}</p>
+        <div class="payment-methods">
+          ${p.payment.map(pm=>`<span class="pay-tag ${pm.includes('PIX')?'pix':''}">${pm}</span>`).join('')}
+        </div>
+        <div class="prod-actions">
+          <button class="btn-cart" onclick="addCart('${p.name}')">+ Carrinho</button>
+          <button class="btn-wish" onclick="openModal(${p.id})" title="Ver detalhes">🔍</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterProds(btn, cat){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter=cat;
+  applyFilters();
+}
+
+function sortProds(val){
+  currentSort=val;
+  applyFilters();
+}
+
+function applyFilters(){
+  let data = currentFilter==='todos' ? [...PRODUCTS] : PRODUCTS.filter(p=>p.cat===currentFilter);
+  if(currentSort==='priceAsc') data.sort((a,b)=>a.price-b.price);
+  else if(currentSort==='priceDesc') data.sort((a,b)=>b.price-a.price);
+  else if(currentSort==='name') data.sort((a,b)=>a.name.localeCompare(b.name));
+  renderProducts(data);
+}
+
+function openModal(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('modalImg').textContent=p.icon;
+  document.getElementById('modalCat').textContent=p.cat==='cadernos'?'Cadernos':p.cat==='colecao'?'Colecionáveis':p.cat==='vestuario'?'Vestuário':'Acessórios';
+  document.getElementById('modalTitle').textContent=p.name;
+  document.getElementById('modalDesc').textContent=p.desc;
+  document.getElementById('modalPrice').textContent='R$ '+p.price.toFixed(2).replace('.',',');
+  document.getElementById('modalInst').textContent=p.installments;
+  document.getElementById('modalSpecs').innerHTML=p.specs.map(s=>`<div class="modal-spec-row"><span class="modal-spec-key">${s.k}</span><span class="modal-spec-val">${s.v}</span></div>`).join('');
+  document.getElementById('modalPayment').innerHTML=p.payment.map(pm=>`<span class="mpay ${pm.includes('PIX')?'pix':pm.includes('Cartão')?'card':''}">${pm}</span>`).join('');
+  document.getElementById('modalCartBtn').onclick=()=>{ addCart(p.name); closeModal(); };
+  document.getElementById('prodModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('prodModal').classList.remove('open'); }
+document.getElementById('prodModal').addEventListener('click',e=>{ if(e.target===document.getElementById('prodModal')) closeModal(); });
+
+function addCart(nome){
+  const t=document.getElementById('toast');
+  t.textContent='✓ '+nome+' adicionado!';
+  t.style.transform='translateY(0)';
+  setTimeout(()=>t.style.transform='translateY(200%)',2800);
+}
+
+// Init
+renderProducts(PRODUCTS);
+</script>
+</body>
+</html>
